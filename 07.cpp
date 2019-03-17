@@ -1,21 +1,58 @@
-//ÃæÊÔÌâ7£ºÖØ½¨¶ş²æÊ÷
-//ÌâÄ¿£º¸ø³öÇ°Ğò±éÀúºÍÖĞĞò±éÀú½á¹û£¬ÖØ½¨¸Ã¶ş²æÊ÷
-//Ç°Ğò±éÀú{1,2,4,7,3,5,6,8}£¬ÖĞĞò±éÀú{4,7,2,1,5,3,8,6} 
+//é¢è¯•é¢˜7ï¼šé‡å»ºäºŒå‰æ ‘
+//é¢˜ç›®ï¼šè¾“å…¥äºŒå‰æ ‘çš„å‰åºä¸­åºéå†ç»“æœï¼Œé‡å»ºäºŒå‰æ ‘
+//å‰åºéå†åºåˆ—{1,2,4,7,3,5,6,8}
+//ä¸­åºéå†åºåˆ—{4,7,2,1,5,3,8,6}
+//
+//æ–¹æ³•ï¼š
+//éå†preï¼Œpre[0]æ˜¯æ ¹èŠ‚ç‚¹rootï¼Œåœ¨inä¸­æ‰¾åˆ°rootï¼Œå·¦è¾¹æ˜¯å·¦å­æ ‘ï¼Œå³è¾¹æ˜¯å³å­æ ‘
+//åœ¨åˆ†åˆ«å¯¹å·¦å³å­æ ‘ï¼Œæ‰¾pre[i+1]ä¸ºrootï¼Œå†åˆ†å‰²ï¼Œé€’å½’ 
+
+
 
 #include <iostream>
 #include <vector>
-#include <string>
-#include <algorithm>
 using namespace std;
 
 struct TreeNode{
 	int val;
 	TreeNode *left;
 	TreeNode *right;
-	TreeNode(int x): val(x), left(nullptr), right(nullptr){}
+	TreeNode(int x): val(x), left(NULL), right(NULL){}
 }; 
 
-TreeNode *reConstructBinaryTree(vector<int> pre, vector<int> vin);
+TreeNode *reConstructBinaryTree(vector<int> pre, vector<int> in){
+	int len = in.size();
+	if(len == 0){
+		return NULL;
+	}
+	vector<int> left_pre, right_pre;
+	vector<int> left_in, right_in;
+	
+	TreeNode *head = new TreeNode(pre[0]);
+	int index = 0;
+	for(int i = 0; i < len; i++){
+		if(in[i] == pre[0]){
+			index = i;
+			break;
+		}
+	}
+	
+	for(int i = 0; i < index; i++){
+		left_pre.push_back(pre[i+1]);
+		left_in.push_back(in[i]);
+	}
+	for(int i = index + 1; i < len; i++){
+		right_pre.push_back(pre[i]);
+		right_in.push_back(in[i]);
+	}
+	
+	head->left = reConstructBinaryTree(left_pre, left_in);
+	head->right = reConstructBinaryTree(right_pre, right_in);
+	
+	return head;
+}
+
+
 void postTraverse(TreeNode *T){
 	if(T){
 		postTraverse(T->left);
@@ -23,37 +60,14 @@ void postTraverse(TreeNode *T){
 		cout << T->val << " ";
 	}
 }
+
 int main(){
 	vector<int> pre = {1,2,4,7,3,5,6,8};
-	vector<int> vin = {4,7,2,1,5,3,8,6};
+	vector<int> in = {4,7,2,1,5,3,8,6};
 	
-	TreeNode *newRoot = reConstructBinaryTree(pre, vin);
+	TreeNode *T = reConstructBinaryTree(pre, in);
 	
-	postTraverse(newRoot);
+	postTraverse(T);//ååºéå†éªŒè¯ 
 	
 	return 0;
-}
-
-TreeNode *reConstructBinaryTree(vector<int> pre, vector<int> vin){
-	if(pre.size() == 0 || pre.size() != vin.size()){
-		return nullptr;
-	}
-	int root = pre[0];
-	TreeNode *newNode = new TreeNode(root);
-	
-	if(pre.size() == 1){
-		return newNode;
-	}
-	
-	auto posi = find(vin.begin(), vin.end(), root);
-	
-	if(posi == vin.end()){
-		return nullptr;
-	}
-	int leftSize = posi - vin.begin();
-	int rightSize = vin.end() - posi - 1;
-	
-	newNode->left = reConstructBinaryTree(vector<int>(pre.begin()+1, pre.begin()+1+leftSize), vector<int>(vin.begin()+leftSize+1, vin.end()));
-	
-	return newNode;
 }
