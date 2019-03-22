@@ -1,0 +1,68 @@
+//面试题18：删除链表的节点
+//题目二：删除重复节点
+//1->2->3->3->4->4->5
+//1->2->5 
+
+#include <iostream>
+using namespace std;
+
+struct ListNode{
+	int val;
+	ListNode *next;
+};
+
+
+
+void createLinkList(ListNode *head, int a[], int n){
+	ListNode *p;
+	ListNode *temp;
+	p = head;
+	for(int i = 0; i < n; i++){
+		temp = new ListNode;
+		temp->val = a[i];
+		temp->next = p->next;
+		p->next = temp;
+	}
+}
+
+void Print(ListNode *head){
+	ListNode *p;
+	p = head->next;
+	while(p){
+		cout << p->val << " ";
+		p = p->next;
+	}
+}
+
+void DeleteDuplication(ListNode *head){
+	ListNode *p;
+	ListNode *q;
+	p = head;
+	while(p->next){
+		q = p->next->next;
+		if(p->next->val != q->val){
+			p = p->next;
+		}else{
+			q = q->next;
+		}
+		ListNode *s = p->next;
+		p->next = q;
+		delete []s;
+	}
+}
+
+
+int main(){
+	int a[] = {1,2,3,3,3,4,4,5,6};
+	ListNode *head;
+	head = new ListNode;
+	head->val = -1;
+	head->next = NULL;
+	
+	createLinkList(head, a, 8);
+	DeleteDuplication(head);
+	Print(head);
+	
+	return 0;
+}
+ 
